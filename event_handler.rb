@@ -10,7 +10,7 @@ class EventHandler
   def handle(event_type, payload)
     case event_type
     when 'item_listed'   then handle_listing(payload)
-    when 'item_sold'     then handle_sale(payload)
+  #  when 'item_sold'     then handle_sale(payload)
   #  when 'item_cancelled' then handle_cancel(payload)
     end
   end
@@ -46,30 +46,32 @@ class EventHandler
     )
   end
 
+  # Disabled Sales to just use two separete webhooks for sales and listing
+  #
   # Sales
-  def handle_sale(payload)
-    price_eth = wei_to_eth(payload['sale_price'])
-    item      = payload['item']
-    name      = item.dig('metadata', 'name') || 'Unknown NFT'
-    image     = item.dig('metadata', 'image_url')
-    link      = item['permalink']
-    collection = payload.dig('collection', 'slug')
-    buyer     = payload.dig('taker', 'address')
-    symbol    = payload.dig('payment_token', 'symbol') || 'ETH'
-
-    post_embed(
-      content: "**Mashi Sold!**",
-      color:  0x00C853,
-      title:  "#{name}",
-      url:    link,
-      image:  image,
-      fields: [
-        { name: 'Sale Price', value: "#{format_price(price_eth)} #{symbol}", inline: true },
-        { name: 'Collection', value: collection,                             inline: true },
-        { name: 'Buyer',      value: short_address(buyer),                  inline: true }
-      ]
-    )
-  end
+#  def handle_sale(payload)
+#    price_eth = wei_to_eth(payload['sale_price'])
+#    item      = payload['item']
+#    name      = item.dig('metadata', 'name') || 'Unknown NFT'
+#    image     = item.dig('metadata', 'image_url')
+#    link      = item['permalink']
+#    collection = payload.dig('collection', 'slug')
+#    buyer     = payload.dig('taker', 'address')
+#    symbol    = payload.dig('payment_token', 'symbol') || 'ETH'
+#
+#    post_embed(
+#      content: "**Mashi Sold!**",
+#      color:  0x00C853,
+#      title:  "#{name}",
+#      url:    link,
+#      image:  image,
+#      fields: [
+#        { name: 'Sale Price', value: "#{format_price(price_eth)} #{symbol}", inline: true },
+#        { name: 'Collection', value: collection,                             inline: true },
+#        { name: 'Buyer',      value: short_address(buyer),                  inline: true }
+#      ]
+#    )
+#  end
 
   # Cancellations
 #  def handle_cancel(payload)
