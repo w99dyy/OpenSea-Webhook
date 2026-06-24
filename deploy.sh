@@ -3,6 +3,8 @@ set -e
 
 IMAGE="ghcr.io/w99dyy/opensea-webhook:latest"
 VPS="root@212.227.161.11"
+CONTAINER="opensea-webhook"
+ENV_PATH="/app/opensea-webhook/.env"
 
 echo "Building..."
 docker build -t $IMAGE .
@@ -10,19 +12,19 @@ docker build -t $IMAGE .
 echo "Pushing to GHCR..."
 docker push $IMAGE
 
-echo "Syncing env file..."
-scp .env $VPS:/app/opensea-webhook/.env   # ← copies local .env to VPS
+echo "Syncing .env..."
+ssh $VPS "mkdir -p /app/opensea-webhook"
+scp .env $VPS:$ENV_PATH
 
-echo "Deploying to VPS..."
+echo "Deploying..."
 ssh $VPS "
-  echo $GITHUB_TOKEN | docker login ghcr.io -u w99dyy --password-stdin &&
   docker pull $IMAGE &&
-  docker stop opensea-bot || true &&
-  docker rm opensea-bot || true &&
+  docker stop $CONTAINER || true &&
+  docker rm $CONTAINER || true &&
   docker run -d \
-    --name opensea-bot \
+    --name $CONTAINER \
     --restart unless-stopped \
-    --env-file /app/opensea-bot/.env \
+    --env-file $ENV_PATH \
     $IMAGE
 "
 
