@@ -39,8 +39,8 @@ class EventHandler
       url:    link,
       image:  image,
       fields: [
-        { name: 'Price',      value: "#{format_price(price_eth)} #{symbol}", inline: true },
-        { name: 'Collection', value: collection,                             inline: true },
+        { name: 'Price',      value: "#{format_price(price_eth)}", inline: true },
+      #  { name: 'Collection', value: collection,                             inline: true },
         { name: 'Seller',     value: short_address(maker),                  inline: true }
       ]
     )
@@ -121,14 +121,14 @@ class EventHandler
 
   def format_price(eth, symbol = 'ETH')
     usd = eth_to_usd(eth)
-    usd_str = usd ? " (~$#{format('%.0f', usd)})" : ""
-    eth_str = eth < 0.001 ? '< 0.001' : format('%.4f', eth)
-    "#{eth_str} #{symbol}#{usd_str}"
+    usd_str = usd ? " ($#{'%.2f' % usd})" : ""
+    "#{eth} #{symbol}#{usd_str}"
   end
 
   def short_address(addr)
     return 'unknown' unless addr
-    "#{addr[0..5]}...#{addr[-4..]}"
+    short = "#{addr[0..5]}...#{addr[-4..]}"
+    "[#{short}](https://opensea.io/#{addr})"
   end
 
   def post_embed(color:, title:, url: nil, image: nil, fields: [], content: nil)
